@@ -7,6 +7,10 @@ import java.util.UUID;
 public class SessionManager {
     private static final Map<String, Session> sessions = new HashMap<>();
     private static final int SESSION_TIMEOUT = 30;  // Minutos
+    private static SessionManager instance;
+
+    private SessionManager() {
+    }
 
     private static class Session {
         final int userId;
@@ -18,13 +22,20 @@ public class SessionManager {
         }
     }
 
-    public static String createSession(int userId) {
+    public static SessionManager getInstance() {
+        if (instance == null) {
+            instance = new SessionManager();
+        }
+        return instance;
+    }
+
+    public String createSession(int userId) {
         String sessionId = UUID.randomUUID().toString();
         sessions.put(sessionId, new Session(userId));
         return sessionId;
     }
 
-    public static boolean validateSession(String sessionId) {
+    public boolean validateSession(String sessionId) {
         Session session = sessions.get(sessionId);
         if (session == null) {
             return false;
@@ -42,7 +53,7 @@ public class SessionManager {
         return true;
     }
 
-    public static int getUserId(String sessionId) {
+    public int getUserId(String sessionId) {
         Session session = sessions.get(sessionId);
         if (session == null) {
             throw new IllegalArgumentException("Invalid session ID");
@@ -50,7 +61,7 @@ public class SessionManager {
         return session.userId;
     }
 
-    public static void invalidateSession(String sessionId) {
+    public void invalidateSession(String sessionId) {
         sessions.remove(sessionId);
     }
 }

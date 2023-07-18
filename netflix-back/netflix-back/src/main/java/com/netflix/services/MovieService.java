@@ -9,6 +9,17 @@ import java.net.URL;
 public class MovieService {
     private static final String API_KEY = "f9cd2450f48051acd8e97a0403b5f2ce";
     private static final String API_URL = "https://api.themoviedb.org/3";
+    private static MovieService instance;
+
+    private MovieService() {
+    }
+
+    public static MovieService getInstance() {
+        if (instance == null) {
+            instance = new MovieService();
+        }
+        return instance;
+    }
 
     public String getMovies(String category, boolean includeAdultContent) throws IOException {
         String path;

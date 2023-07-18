@@ -15,10 +15,11 @@ import java.util.List;
 public class UserService {
     private static List<User> users = new ArrayList<>();
     private static final ObjectMapper mapper = new ObjectMapper();
-
+    private static UserService instance;
     private static final String userFilePath = "C:\\Users\\enzo_\\Desktop\\netflix\\netflix-back\\netflix-back\\users.txt";
 
-    static {
+    // tornar o construtor privado para impedir a criação direta de instâncias
+    private UserService() {
         try {
             File file = new File(userFilePath);
             if (file.exists()) {
@@ -34,7 +35,15 @@ public class UserService {
         }
     }
 
-    public static int getUserAge(int userId) {
+    // método estático para obter a única instância de UserService
+    public static UserService getInstance() {
+        if (instance == null) {
+            instance = new UserService();
+        }
+        return instance;
+    }
+
+    public int getUserAge(int userId) {
         return users.stream()
                 .filter(user -> user.getId() == userId)
                 .findFirst()
@@ -42,7 +51,7 @@ public class UserService {
                 .getAge();
     }
 
-    public static void printUserFile() {
+    public void printUserFile() {
         try {
             String contents = new String(Files.readAllBytes(Paths.get(userFilePath)));
             System.out.println(contents);
@@ -51,21 +60,19 @@ public class UserService {
         }
     }
 
-    public static void addUser(User user) {
+    public void addUser(User user) {
         int userId = users.size() + 1;
         user.setId(userId);
         users.add(user);
         try {
-
             mapper.writerWithDefaultPrettyPrinter().writeValue(new File(userFilePath), users);
-
             printUserFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static User getUser(String username, String password) {
+    public User getUser(String username, String password) {
         return users.stream()
                 .filter(user -> user.getUsername().equals(username) && user.getPassword().equals(password))
                 .findFirst()
