@@ -14,33 +14,48 @@ public class MovieService {
         String path;
         switch (category) {
             case "trending":
-                path = "/trending/all/week";
+                path = "/trending/all/week?api_key=" + API_KEY;
                 break;
             case "netflixOriginals":
-                path = "/discover/tv?with_networks=213";
+                path = "/discover/tv/?api_key=" + API_KEY + "&with_networks=213";
                 break;
             case "topRated":
-                path = "/movie/top_rated";
+                path = "/movie/top_rated/?api_key=" + API_KEY;
                 break;
             case "comedy":
-                path = "/discover/tv?&with_genres=35";
+                path = "/discover/tv/?api_key=" + API_KEY + "&with_genres=35";
                 break;
             case "romances":
-                path = "/discover/tv?&with_genres=10749";
+                path = "/discover/tv/?api_key=" + API_KEY + "&with_genres=10749";
                 break;
             case "documentaries":
-                path = "/discover/tv/&with_genres=99";
+                path = "/discover/tv/?api_key=" + API_KEY + "&with_genres=99";
                 break;
             default:
                 throw new IllegalArgumentException("Invalid category: " + category);
         }
 
-        String queryString = "?api_key=" + API_KEY + "&language=pt-BR" + "&include_adult=" + includeAdultContent;
+        String queryString = "&language=pt-BR" + "&include_adult=" + includeAdultContent;
         URL url = new URL(API_URL + path + queryString);
+
+        // Permite redirects
+        HttpURLConnection.setFollowRedirects(true);
+
+        //System.out.println(url);
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         connection.connect();
+
+        int status = connection.getResponseCode();
+
+        // Pega o redirect da api e faz a chamada a partir novamente, desta vez pro redirect
+        if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM) {
+            String location = connection.getHeaderField("Location");
+            URL newUrl = new URL(location);
+            connection = (HttpURLConnection) newUrl.openConnection();
+            connection.connect();
+        }
 
         int responseCode = connection.getResponseCode();
         if (responseCode != 200) {

@@ -16,7 +16,7 @@ public class UserService {
     private static List<User> users = new ArrayList<>();
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private static final String userFilePath = "C:\\Users\\enzo_\\Desktop\\netflix\\netflix-back\\users.txt";
+    private static final String userFilePath = "C:\\Users\\enzo_\\Desktop\\netflix\\netflix-back\\netflix-back\\users.txt";
 
     static {
         try {

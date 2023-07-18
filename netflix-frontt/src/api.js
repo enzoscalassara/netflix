@@ -50,7 +50,7 @@ export const getMovies = async (path) => {
         const response = await fetch(url, {
             credentials: 'include',
             headers: {
-                'Cookie': 'JSESSIONID=' + sessionId,
+                'X-Session-Id': sessionId,
             }
         });
 
