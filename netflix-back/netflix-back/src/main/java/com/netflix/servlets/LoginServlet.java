@@ -18,25 +18,31 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("signin doPost");
 
+        // Cria um StringBuilder para ler o corpo da requisição
         StringBuilder buffer = new StringBuilder();
         BufferedReader reader = request.getReader();
         String line;
+        // Lê linha por linha do corpo da requisição e adiciona ao StringBuilder
         while ((line = reader.readLine()) != null) {
             buffer.append(line);
         }
 
+        // Converte o conteúdo para uma string
         String data = buffer.toString();
 
-        // parse JSON body of the request
+        // Faz o parsing do corpo da requisição para um objeto User
         ObjectMapper mapper = new ObjectMapper();
         User requestBody = mapper.readValue(data, User.class);
 
+        // Pega o nome de usuário e a senha da requisição
         String username = requestBody.getUsername();
         String password = requestBody.getPassword();
 
         UserController userController = new UserController();
+        // Guarda o id da sessão em uma string
         String sessionId = userController.signIn(username, password);
 
+        // Se o id não for nulo devolve o id da sessao
         if (sessionId != null) {
             HttpSession session = request.getSession();
             session.setAttribute("userId", sessionId);
